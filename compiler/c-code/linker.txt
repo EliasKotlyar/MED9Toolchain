@@ -1,0 +1,69 @@
+/*
+assume r13 = 0x7ffff0
+assume r2 = 0x5c9ff0
+
+Regions for R13:
+Start: 0x7EFFF1
+Middle : 0x7ffff0
+End: 0x80FFEF
+LEN = 0x1FFFE
+
+Regions for R2:
+Start: 0x5B9FF1
+Middle : 0x5c9ff0
+End: 0x5D9FEF
+LEN = 0x1FFFE
+Unfortunately, we cannot use that till now, cause i havent implemented some logic which will put all the variables into "subsections"
+*/
+MEMORY
+{
+    R2 (rx) :    ORIGIN = 0x005B9FF1, LENGTH = 0x0001FFFE
+    R13 (rx) :   ORIGIN = 0x007EFFF1, LENGTH = 0x0001FFFE
+    FLASH (rx) : ORIGIN = FREE_FLASH_MEMORY, LENGTH = 0x10000
+    RAM (rx) : ORIGIN = FREE_RAM_MEMORY, LENGTH = 0x10000
+	DUMMY (rx) : ORIGIN = 0x00800000, LENGTH = 0x01000000
+
+}
+
+SECTIONS
+{
+    _SDA_BASE_ = 0x5c9ff0;
+    .sdata : {
+        . = . + 0xFFFF;
+        *(.sdata)
+    } > R2
+
+    _SDA2_BASE_ = 0x7ffff0;
+    .sdata2 : {
+        . = . + 0xFFFF;
+        *(.sdata2)
+    } > R13
+
+
+	.ram :
+    {
+        *(.variables)
+    } > RAM
+
+    /* Assign all things which are required into "flash"-region */
+	.flash :
+    {
+        *(.header)
+        . = . + 0x10;
+        . = ALIGN(0x10);
+        *(.values)
+        *(.code)
+        . = . + 0x10;
+        . = ALIGN(0x10);
+        *(.footer)
+    } > FLASH
+
+
+
+
+
+
+
+
+
+}

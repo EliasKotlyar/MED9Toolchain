@@ -1,0 +1,5 @@
+work/*
+!work/.gitkeep
+temp/*
+testfiles/*
+.idea/*

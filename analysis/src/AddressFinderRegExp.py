@@ -8,10 +8,19 @@ class AddressFinderRegExp:
         # It takes the file content as input, which should be in hexadecimal format.
         self.file_content = file_content
 
+    def uppercase_hex_chars(self,string):
+        # Define the regular expression pattern
+        pattern = r'[A-Fa-f]'
+
+        # Use a lambda function as the replacement to uppercase the matched characters
+        result = re.sub(pattern, lambda match: match.group(0).upper(), string)
+
+        return result
+
     def find_by_signature(self, signature: str):
         # Method for finding an address based on a signature.
         # It takes a signature string as input and returns the address.
-        signature = signature.upper()
+        signature = self.uppercase_hex_chars(signature)
         _signature = signature.replace("X", "[0-9A-F]{1}")
         _signature = _signature.replace(" ", "")
         pattern = re.compile(_signature)

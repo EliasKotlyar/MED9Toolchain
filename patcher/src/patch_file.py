@@ -46,7 +46,16 @@ class PatchFile:
         self.content = self.content[:address] + value_bytes + self.content[address + len(value_bytes):]
 
     def write_long(self, address: str, value: int):
-        value_bytes = value.to_bytes(4, 'big')
+        self._write_value(address, value, 4)
+
+    def write_short(self, address: str, value: int):
+        self._write_value(address, value, 2)
+
+    def write_byte(self, address: str, value: int):
+        self._write_value(address, value, 1)
+
+    def _write_value(self, address: str, value: int, bytes_count: int):
+        value_bytes = value.to_bytes(bytes_count, 'big')
         value_bytes = value_bytes.hex().upper()
         self.write_bytes(address, value_bytes)
 

@@ -15,19 +15,25 @@ struct kwp_input_struct {
 int READMEMORYBYADDRESS() __attribute__((section(".code"))) ;
 int READMEMORYBYADDRESS ()
 {
-    unsigned char* kwp_answer;
+    // Get Kwp Buffer:
+    unsigned char* kwp_buffer;
     struct kwp_input_struct* r4;
-    //register int *r5 asm ("r4");
     asm ("mr  %0, 4" : "=r" (r4));
+    kwp_buffer = ((unsigned char *)r4->element0);
 
+    // Get Memory Address:
+    uint32_t memory_address_var = (uint32_t)kwp_buffer[0] << 16 | (uint32_t)kwp_buffer[1] << 8 | (uint32_t)kwp_buffer[2];
+    unsigned char* memory_address_pointer = ((unsigned char *)memory_address_var);
+    uint8_t memory_len = (uint8_t)kwp_buffer[3];
+
+    int i;
+    for(i = 0; i < memory_len; i++ ){
+        kwp_buffer[i] = memory_address_pointer[i];
+    }
 
     // 1 means ok, 2 is bad request. Will be added to KWP output code.
     r4->ret_status = 0x1;
     // Msg Len
-    r4->msg_len = 0x2;
-    // Answer Buffer:
-    kwp_answer = ((unsigned char *)r4->element0);
-    kwp_answer[0] = 0x12;
-
+    r4->msg_len = memory_len;
     return r4->ret_status;
 }

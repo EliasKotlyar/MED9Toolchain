@@ -9,7 +9,7 @@ class RamReader(AbstractPatch):
         # Set SID:
         self.file.write_byte(hex(offset), sid)
         self.file.write_bytes(hex(offset + 1), "FF" * 3)
-        # Set "KWP Flag" - can be 3F , 3C or 10 or 38. Depending on Service.
+        # Set "KWP Flag" - can be 3F , 3C or 10 or 38. Depending on Service. 38 works mostly.
         self.file.write_byte(hex(offset + 7), 0x38)
         # Set Func Address:
         func_addr = int(self.file.get_memorymap(funcname), 16)
@@ -41,4 +41,4 @@ class RamReader(AbstractPatch):
         return "ramreader"
 
     def get_c_files(self):
-        return ["ramreader.c", "ramwriter.c"]
+        return ["ramreader.c", "ramwriter.c", "ramreader.h"]
